@@ -1,0 +1,40 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
+header { background: #2d6a4f; color: white; padding: 20px 40px; }
+header h1 { font-size: 1.8rem; }
+header p { opacity: 0.8; font-size: 0.95rem; }
+main { max-width: 900px; margin: 30px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 24px; }
+.form-section { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.form-section h2 { margin-bottom: 16px; color: #2d6a4f; }
+.form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.form-row input { flex: 1; min-width: 120px; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; }
+.form-row input:focus { outline: none; border-color: #2d6a4f; }
+.form-buttons { display: flex; gap: 10px; margin-top: 4px; }
+.form-buttons button { padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; }
+#submit-btn { background: #2d6a4f; color: white; }
+#submit-btn:hover { background: #1b4332; }
+#cancel-btn { background: #eee; color: #555; }
+.filters { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.filter-btn { padding: 8px 18px; border: 2px solid #2d6a4f; border-radius: 20px; background: white; color: #2d6a4f; cursor: pointer; font-weight: 600; }
+.filter-btn.active { background: #2d6a4f; color: white; }
+#sort-select { padding: 8px 14px; border: 2px solid #ddd; border-radius: 20px; font-size: 0.9rem; cursor: pointer; }
+.stats { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
+.stat-card { background: white; border-radius: 10px; padding: 12px 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); flex: 1; min-width: 120px; text-align: center; }
+.stat-card .num { font-size: 1.6rem; font-weight: 700; color: #2d6a4f; }
+.stat-card .label { font-size: 0.8rem; color: #888; margin-top: 2px; }
+.product-list { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.product-card { background: white; border-radius: 10px; padding: 16px 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); display: flex; align-items: center; justify-content: space-between; gap: 12px; border-left: 5px solid #ccc; }
+.product-card.Taze { border-left-color: #52b788; }
+.product-card.Kritik { border-left-color: #f4a261; }
+.product-card.Tarihi { border-left-color: #e63946; }
+.product-info h3 { font-size: 1rem; margin-bottom: 4px; }
+.product-info p { font-size: 0.85rem; color: #666; }
+.product-meta { display: flex; align-items: center; gap: 12px; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+.badge.Taze { background: #d8f3dc; color: #1b4332; }
+.badge.Kritik { background: #ffe8cc; color: #7c4a00; }
+.badge.Tarihi { background: #ffd6d6; color: #7d0000; }
+.product-actions button { padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; margin-left: 6px; }
+.edit-btn { background: #e9f5ee; color: #2d6a4f; }
+.delete-btn { background: #fde8e8; color: #c0392b; }
+.empty { text-align: center; color: #aaa; padding: 40px; }

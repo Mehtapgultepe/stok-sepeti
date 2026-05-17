@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StokSepeti</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🛒 StokSepeti</h1>
+    <p>Mutfak Stok & Son Tüketim Tarihi Takibi</p>
+  </header>
+  <main>
+    <section class="form-section">
+      <h2 id="form-title">Yeni Ürün Ekle</h2>
+      <form id="product-form">
+        <input type="hidden" id="edit-id" />
+        <div class="form-row">
+          <input type="text" id="name" placeholder="Ürün Adı" required />
+          <input type="text" id="category" placeholder="Kategori" required />
+        </div>
+        <div class="form-row">
+          <input type="number" id="quantity" placeholder="Miktar" step="0.1" min="0.1" required />
+          <input type="text" id="unit" placeholder="Birim (kg, L, adet...)" required />
+          <input type="date" id="expiry_date" required />
+        </div>
+        <div class="form-buttons">
+          <button type="submit" id="submit-btn">Ekle</button>
+          <button type="button" id="cancel-btn" style="display:none">İptal</button>
+        </div>
+      </form>
+    </section>
+    <section class="list-section">
+      <div class="filters">
+        <button class="filter-btn active" data-filter="">Tümü</button>
+        <button class="filter-btn" data-filter="critical">⚠️ Kritik</button>
+        <select id="sort-select">
+          <option value="">Sıralama</option>
+          <option value="asc">Son Tarihe Yakın</option>
+          <option value="desc">Son Tarihe Uzak</option>
+        </select>
+      </div>
+      <div id="stats" class="stats"></div>
+      <div id="product-list" class="product-list"></div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
