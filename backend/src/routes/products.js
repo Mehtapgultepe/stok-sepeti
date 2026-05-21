@@ -1,39 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const service = require('../services/productService');
+const authenticate = require('../middleware/auth');
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Product:
- *       type: object
- *       properties:
- *         id:
- *           type: integer
- *         name:
- *           type: string
- *         category:
- *           type: string
- *         quantity:
- *           type: number
- *         unit:
- *           type: string
- *         expiry_date:
- *           type: string
- *           format: date
- *         daysUntilExpiry:
- *           type: integer
- *         status:
- *           type: string
- *           enum: [Taze, Kritik, Tarihi Geçmiş]
- */
+router.use(authenticate);
 
 /**
  * @swagger
  * /api/products:
  *   get:
  *     summary: Tüm ürünleri listele
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: sortBy
@@ -47,18 +25,11 @@ const service = require('../services/productService');
  *           enum: [critical]
  *     responses:
  *       200:
- *         description: Ürün listesi
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
+ *         description: Urun listesi
  */
 router.get('/', (req, res) => {
   try {
-    const { sortBy, filter } = req.query;
-    const products = service.getAllProducts({ sortBy, filter });
+    const products = service.getAllProducts(req.user.id, req.query);
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -69,7 +40,9 @@ router.get('/', (req, res) => {
  * @swagger
  * /api/products/{id}:
  *   get:
- *     summary: ID ile ürün getir
+ *     summary: ID ile urun getir
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -78,18 +51,14 @@ router.get('/', (req, res) => {
  *           type: integer
  *     responses:
  *       200:
- *         description: Ürün bulundu
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
+ *         description: Urun bulundu
  *       404:
- *         description: Ürün bulunamadı
+ *         description: Urun bulunamadi
  */
 router.get('/:id', (req, res) => {
   try {
-    const product = service.getProductById(Number(req.params.id));
-    if (!product) return res.status(404).json({ error: 'Ürün bulunamadı' });
+    const product = service.getProductById(Number(req.params.id), req.user.id);
+    if (!product) return res.status(404).json({ error: 'Urun bulunamadi' });
     res.json(product);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -100,7 +69,9 @@ router.get('/:id', (req, res) => {
  * @swagger
  * /api/products:
  *   post:
- *     summary: Yeni ürün ekle
+ *     summary: Yeni urun ekle
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -122,17 +93,13 @@ router.get('/:id', (req, res) => {
  *                 format: date
  *     responses:
  *       201:
- *         description: Ürün oluşturuldu
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
+ *         description: Urun olusturuldu
  *       400:
- *         description: Geçersiz istek
+ *         description: Gecersiz istek
  */
 router.post('/', (req, res) => {
   try {
-    const product = service.createProduct(req.body);
+    const product = service.createProduct(req.user.id, req.body);
     res.status(201).json(product);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -143,7 +110,9 @@ router.post('/', (req, res) => {
  * @swagger
  * /api/products/{id}:
  *   put:
- *     summary: Ürün güncelle
+ *     summary: Urun guncelle
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -169,18 +138,14 @@ router.post('/', (req, res) => {
  *                 format: date
  *     responses:
  *       200:
- *         description: Ürün güncellendi
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
+ *         description: Urun guncellendi
  *       404:
- *         description: Ürün bulunamadı
+ *         description: Urun bulunamadi
  */
 router.put('/:id', (req, res) => {
   try {
-    const product = service.updateProduct(Number(req.params.id), req.body);
-    if (!product) return res.status(404).json({ error: 'Ürün bulunamadı' });
+    const product = service.updateProduct(Number(req.params.id), req.user.id, req.body);
+    if (!product) return res.status(404).json({ error: 'Urun bulunamadi' });
     res.json(product);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -191,7 +156,9 @@ router.put('/:id', (req, res) => {
  * @swagger
  * /api/products/{id}:
  *   delete:
- *     summary: Ürün sil
+ *     summary: Urun sil
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -200,14 +167,14 @@ router.put('/:id', (req, res) => {
  *           type: integer
  *     responses:
  *       204:
- *         description: Ürün silindi
+ *         description: Urun silindi
  *       404:
- *         description: Ürün bulunamadı
+ *         description: Urun bulunamadi
  */
 router.delete('/:id', (req, res) => {
   try {
-    const deleted = service.deleteProduct(Number(req.params.id));
-    if (!deleted) return res.status(404).json({ error: 'Ürün bulunamadı' });
+    const deleted = service.deleteProduct(Number(req.params.id), req.user.id);
+    if (!deleted) return res.status(404).json({ error: 'Urun bulunamadi' });
     res.status(204).send();
   } catch (err) {
     res.status(500).json({ error: err.message });

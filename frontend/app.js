@@ -2,11 +2,31 @@ const API = 'http://localhost:3001/api/products';
 let currentFilter = '';
 let currentSort = '';
 
+const token = localStorage.getItem('token');
+const username = localStorage.getItem('username');
+if (!token) window.location.href = 'login.html';
+
+document.querySelector('header').insertAdjacentHTML('beforeend', `
+  <div style="float:right;margin-top:-40px">
+    <span style="color:white;margin-right:12px">👤 ${username}</span>
+    <button onclick="logout()" style="padding:6px 16px;background:rgba(255,255,255,0.2);color:white;border:1px solid white;border-radius:6px;cursor:pointer">Çıkış</button>
+  </div>
+`);
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('username');
+  window.location.href = 'login.html';
+}
+
 async function fetchProducts() {
   const params = new URLSearchParams();
   if (currentFilter) params.append('filter', currentFilter);
   if (currentSort) params.append('sortBy', currentSort);
-  const res = await fetch(`${API}?${params}`);
+  const res = await fetch(`${API}?${params}`, {
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  if (res.status === 401) { logout(); return []; }
   return res.json();
 }
 
@@ -26,7 +46,6 @@ function renderProducts(products) {
   if (!products.length) { list.innerHTML = '<div class="empty">Ürün bulunamadı.</div>'; return; }
   list.innerHTML = products.map(p => {
     const cls = p.status === 'Tarihi Geçmiş' ? 'Tarihi' : p.status;
-    const badgeCls = p.status === 'Tarihi Geçmiş' ? 'Tarihi' : p.status;
     const days = p.daysUntilExpiry < 0 ? `${Math.abs(p.daysUntilExpiry)} gün geçmiş` : `${p.daysUntilExpiry} gün kaldı`;
     return `
       <div class="product-card ${cls}">
@@ -35,7 +54,7 @@ function renderProducts(products) {
           <p>${p.quantity} ${p.unit} · ${p.category} · ${p.expiry_date} · ${days}</p>
         </div>
         <div class="product-meta">
-          <span class="badge ${badgeCls}">${p.status}</span>
+          <span class="badge ${cls}">${p.status}</span>
           <div class="product-actions">
             <button class="edit-btn" onclick="startEdit(${p.id})">Düzenle</button>
             <button class="delete-btn" onclick="deleteProduct(${p.id})">Sil</button>
@@ -61,17 +80,19 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
     unit: document.getElementById('unit').value.trim(),
     expiry_date: document.getElementById('expiry_date').value,
   };
-  if (id) {
-    await fetch(`${API}/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  } else {
-    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  }
+  const url = id ? `${API}/${id}` : API;
+  const method = id ? 'PUT' : 'POST';
+  await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify(body)
+  });
   resetForm();
   loadProducts();
 });
 
 async function startEdit(id) {
-  const res = await fetch(`${API}/${id}`);
+  const res = await fetch(`${API}/${id}`, { headers: { 'Authorization': 'Bearer ' + token } });
   const p = await res.json();
   document.getElementById('edit-id').value = p.id;
   document.getElementById('name').value = p.name;
@@ -87,7 +108,7 @@ async function startEdit(id) {
 
 async function deleteProduct(id) {
   if (!confirm('Ürün silinsin mi?')) return;
-  await fetch(`${API}/${id}`, { method: 'DELETE' });
+  await fetch(`${API}/${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
   loadProducts();
 }
 

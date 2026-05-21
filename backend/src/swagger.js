@@ -1,4 +1,5 @@
 const swaggerJsdoc = require('swagger-jsdoc');
+const path = require('path');
 
 const options = {
   definition: {
@@ -9,8 +10,17 @@ const options = {
       description: 'Gıda Son Tüketim Tarihi ve Mutfak Stok Takip Sistemi API',
     },
     servers: [{ url: 'http://localhost:3001' }],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        }
+      }
+    }
   },
-  apis: ['./src/routes/*.js'],
+  apis: [path.join(__dirname, 'routes/*.js')],
 };
 
 module.exports = swaggerJsdoc(options);
